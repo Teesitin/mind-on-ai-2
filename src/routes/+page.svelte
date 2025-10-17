@@ -3,8 +3,6 @@
     import HackerBackground from "$lib/components/HackerBackground.svelte";
 </script>
 
-<HackerBackground/>
-
 <section class="mt-10 text-center max-w-3xl m-auto w-[90%]">
     <h1 class="text-5xl">What is on your mind for AI?</h1>
 
@@ -23,5 +21,3 @@
         </RedirectButton>
     </div>
 </section>
-
-

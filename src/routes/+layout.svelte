@@ -2,6 +2,7 @@
 	import '../app.css';
 	import favicon from '$lib/assets/favicon.svg';
     import Header from '$lib/components/header/Header.svelte';
+    import HackerBackground from '$lib/components/HackerBackground.svelte';
 	
 	let { children } = $props();
 </script>
@@ -11,4 +12,6 @@
 </svelte:head>
 
 <Header/>
+<HackerBackground />
+
 {@render children?.()}

@@ -1,33 +1,29 @@
 <script lang="ts">
     import Button from "$lib/components/common/Button.svelte";
+    import RedirectButton from "$lib/components/common/RedirectButton.svelte";
     import HackerBackground from "$lib/components/HackerBackground.svelte";
+    import { questions, randomizedQuestions, resetAnswers, setAnswer } from "$lib/userResponse";
+    import { onMount } from "svelte";
 
-    const questions = [
-        "I am comfortable sharing my personal data with AI systems.",
-        "I believe AI will create more jobs than it replaces.",
-        "I trust AI to make fair and unbiased decisions.",
-        "I feel that AI is advancing too quickly for society to handle.",
-        "I would be comfortable letting an AI assistant make important choices for me.",
-        "I like my AI chatbot to have a personality, even if it acts flirty or funny.",
-        "I think AI should have rights if it becomes self-aware.",
-        "I believe AI can be trusted to care for people, such as the elderly or sick.",
-        "I am worried that AI could eventually become dangerous to humanity.",
-        "I think AI should always identify itself clearly as non-human in conversations."
-    ];
+    let resetClicks = 0;
+    const resetClickAmount = 5;
+    let resetTimeout: ReturnType<typeof setTimeout>; // ✅ works in browser too
+    
+    function handleResetClick() {
+        resetClicks++;
 
-    let answers = Array(questions.length).fill(null);
+        // reset counter if too slow
+        clearTimeout(resetTimeout);
+        resetTimeout = setTimeout(() => (resetClicks = 0), 3000);
 
-    function setAnswer(index: number, value: string) {
-        // ✅ Replace the array reference so Svelte sees the change
-        answers = answers.map((a, i) => (i === index ? value : a));
-
-        console.log(answers);
+        if (resetClicks >= resetClickAmount) {
+            resetAnswers();
+            resetClicks = 0;
+        }
     }
 </script>
 
-<HackerBackground />
-
-<section class="z-10 max-w-3xl w-[90%] mt-20 m-auto text-center">
+<section class="z-10 max-w-3xl w-[90%] mt-10 m-auto text-center">
     <h1 class="text-3xl mb-8">
         AI Opinion Survey
     </h1>
@@ -37,28 +33,28 @@
     </p>
 </section>
 
-{#each questions as question, i}
+{#each $randomizedQuestions as question}
     <section class="z-10 max-w-3xl w-[90%] mt-20 m-auto text-center rounded-xl backdrop-blur border p-4 border-blue-500/50">
         <p class="text-xl mb-8">
-            {question}
+            {question.question}
         </p>
 
         <p class="flex gap-4 justify-center">
-            <Button btnClass={`w-[100px] ${answers[i] === "No" ? 'bg-sky-300/50' : ''}`} on:click={() => setAnswer(i, "No")}>
+            <Button btnClass={`w-[100px] ${question.answer === "No" ? 'bg-sky-300/50' : ''}`} on:click={() => setAnswer(question.index, "No")}>
                 No
             </Button>
 
-            <Button btnClass={`w-[100px] ${answers[i] === "Yes" ? 'bg-sky-300/50' : ''}`} on:click={() => setAnswer(i, "Yes")}>
+            <Button btnClass={`w-[100px] ${question.answer  === "Yes" ? 'bg-sky-300/50' : ''}`} on:click={() => setAnswer(question.index, "Yes")}>
                 Yes
             </Button>
         </p>
     </section>
 {/each}
 
-
-
-<section class="z-10 max-w-3xl w-[90%] mt-20 m-auto text-center">
-    <Button>
-        Submit
+<section class="z-10 max-w-3xl w-[90%] my-20 m-auto text-center flex justify-center items-center gap-6">
+    <Button btnClass="bg-red-500/30 hover:bg-red-500/50" on:click={handleResetClick}>
+        {resetClicks > 0 ? `Click ${resetClickAmount - resetClicks} time${resetClickAmount - resetClicks === 1 ? '' : 's'}` : 'Reset'}
     </Button>
+
+    <RedirectButton btnClass="w-64" link="/report">Submit</RedirectButton>
 </section>
