@@ -1,17 +1,17 @@
 <script lang="ts">
     import RedirectButton from "$lib/components/common/RedirectButton.svelte";
     import HackerBackground from "$lib/components/HackerBackground.svelte";
+    import Gauge from "$lib/components/report/Gauge.svelte";
     import { questions } from "$lib/userResponse";
 
     // derived reactivity for completed check
     let allAnswered = $derived($questions.every(q => q.answer !== ""));
 
-    // ✅ derive category scores properly
     let scores = $derived({
-        acceptance: 10,
-        safety: 10,
-        humanlike: 10,
-        savior: 10
+        acceptance: 0,
+        safety: 0,
+        humanlike: 0,
+        savior: 0
     });
 
     $effect(() => {
@@ -54,16 +54,36 @@
         }
 
         for (const key in result) {
-            result[key as keyof typeof result] = Math.max(0, Math.min(20, 10 + result[key as keyof typeof result]));
+            result[key as keyof typeof result] = Math.max(-10, Math.min(10, result[key as keyof typeof result]));
         }
 
         scores = result;
     });
+
+    // 🧠 Test helper: randomize all answers
+    function randomizeAnswers() {
+        console.log("test");
+        questions.update(qs => {
+            qs.forEach(q => {
+                q.answer = Math.random() > 0.5 ? "Yes" : "No";
+            });
+            return qs;
+        });
+    }
 </script>
+
+<!-- Randomize button for testing -->
+<button
+    onclick={randomizeAnswers}
+    class="fixed top-4 right-4 bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-md shadow-lg z-50"
+>
+    🎲 Randomize
+</button>
+
 
 {#if !allAnswered}
     <section class="mt-10 text-center max-w-3xl m-auto w-[90%]">
-        <h1 class="text-5xl">Did you finish the survey?</h1>
+        <h1 class="text-3xl">Did you finish the survey?</h1>
 
         <p class="leading-relaxed text-lg text-gray-300 mt-8">
             If you're seeing this, it means you didn't finish the survey. Please go back and answer all the questions. Thank you!
@@ -77,38 +97,169 @@
     </section>
 {:else}
     <section class="mt-10 text-center max-w-3xl m-auto w-[90%]">
-        <h1 class="text-5xl mb-10">Survey says...</h1>
+        <h1 class="text-3xl mb-10">Survey says...</h1>
 
-        <div class="space-y-10">
-            <div>
-                <h2 class="text-2xl mb-2 text-blue-300">Acceptance ↔ Rejection</h2>
-                <input type="range" min="0" max="20" step="1" value={scores.acceptance} class="w-full accent-blue-400" disabled />
-                <p class="text-sm mt-1 text-gray-400">{scores.acceptance}/20</p>
-            </div>
-
-            <div>
-                <h2 class="text-2xl mb-2 text-green-300">Safety ↔ Progress</h2>
-                <input type="range" min="0" max="20" step="1" value={scores.safety} class="w-full accent-green-400" disabled />
-                <p class="text-sm mt-1 text-gray-400">{scores.safety}/20</p>
-            </div>
-
-            <div>
-                <h2 class="text-2xl mb-2 text-purple-300">Human-Like ↔ Robotic</h2>
-                <input type="range" min="0" max="20" step="1" value={scores.humanlike} class="w-full accent-purple-400" disabled />
-                <p class="text-sm mt-1 text-gray-400">{scores.humanlike}/20</p>
-            </div>
-
-            <div>
-                <h2 class="text-2xl mb-2 text-red-300">Savior ↔ Extinction</h2>
-                <input type="range" min="0" max="20" step="1" value={scores.savior} class="w-full accent-red-400" disabled />
-                <p class="text-sm mt-1 text-gray-400">{scores.savior}/20</p>
-            </div>
-        </div>
-
-        <div class="mt-12">
-            <RedirectButton link="/survay">
-                Retake Survey
-            </RedirectButton>
+        <div class="flex justify-center gap-40">
+            <Gauge bind:value={scores.acceptance} topLabel="Acceptance" bottomLabel="Rejection" />
+            <Gauge bind:value={scores.safety} topLabel="Safety" bottomLabel="Progress" />
+            <Gauge bind:value={scores.humanlike} topLabel="Human" bottomLabel="Robotic" />
+            <Gauge bind:value={scores.savior} topLabel="Savior" bottomLabel="Extinction" />    
         </div>
     </section>
 {/if}
+
+
+<!-- Personality Subtype Tables -->
+<section class="mt-20 max-w-3xl m-auto space-y-20">
+    <h2 class="text-2xl mb-4 text-blue-300 text-center">AI Attitude Breakdown</h2>
+
+    <!-- Acceptance ↔ Rejection -->
+    <table class="w-full border-collapse text-sm text-gray-300 backdrop-blur-xs outline-1 outline-blue-500/50 rounded-xl">
+        <thead>
+            <tr class="text-blue-300 border-b border-blue-500/50">
+                <th colspan="3" class="p-3 text-left font-semibold">Acceptance ↔ Rejection</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr class="{scores.acceptance >= 6 ? 'bg-blue-900/40' : ''}">
+                <td class="p-2 w-36">🟦 High Positive</td>
+                <td class="p-2">AI Evangelist</td>
+                <td class="p-2">Fully embraces AI as transformative and essential. Advocates for deeper integration of AI in life and work.</td>
+            </tr>
+            <tr class="{scores.acceptance >= 1 && scores.acceptance <= 5 ? 'bg-green-900/40' : ''}">
+                <td class="p-2">🟩 Positive</td>
+                <td class="p-2">Tech Optimist</td>
+                <td class="p-2">Generally positive about AI's potential but still trusts human oversight.</td>
+            </tr>
+            <tr class="{scores.acceptance === 0 ? 'bg-slate-800/50' : ''}">
+                <td class="p-2">⚪ Neutral</td>
+                <td class="p-2">Indifferent</td>
+                <td class="p-2">Feels neither for nor against AI. Uses it situationally but remains emotionally detached.</td>
+            </tr>
+            <tr class="{scores.acceptance <= -1 && scores.acceptance >= -5 ? 'bg-yellow-900/40' : ''}">
+                <td class="p-2">🟨 Negative</td>
+                <td class="p-2">Cautious Realist</td>
+                <td class="p-2">Sees value in AI but keeps distance due to ethical or social concerns.</td>
+            </tr>
+            <tr class="{scores.acceptance <= -6 ? 'bg-red-900/40' : ''}">
+                <td class="p-2">🟥 High Negative</td>
+                <td class="p-2">AI Skeptic</td>
+                <td class="p-2">Deeply distrustful of AI and its societal effects.</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- Safety ↔ Progress -->
+    <table class="w-full border-collapse text-sm text-gray-300 backdrop-blur-xs outline-1 outline-blue-500/50 rounded-xl">
+        <thead>
+            <tr class="text-blue-300 border-b border-blue-500/50">
+                <th colspan="3" class="p-3 text-left font-semibold">Safety ↔ Progress</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr class="{scores.safety >= 6 ? 'bg-blue-900/40' : ''}">
+                <td class="p-2 w-36">🟦 High Positive</td>
+                <td class="p-2">Ethicist</td>
+                <td class="p-2">Prioritizes regulation and moral responsibility over rapid progress.</td>
+            </tr>
+            <tr class="{scores.safety >= 1 && scores.safety <= 5 ? 'bg-green-900/40' : ''}">
+                <td class="p-2">🟩 Positive</td>
+                <td class="p-2">Balancer</td>
+                <td class="p-2">Supports innovation but insists on responsible development.</td>
+            </tr>
+            <tr class="{scores.safety === 0 ? 'bg-slate-800/50' : ''}">
+                <td class="p-2">⚪ Neutral</td>
+                <td class="p-2">Indifferent</td>
+                <td class="p-2">Views AI progress with measured detachment. Accepts both risk and reward.</td>
+            </tr>
+            <tr class="{scores.safety <= -1 && scores.safety >= -5 ? 'bg-yellow-900/40' : ''}">
+                <td class="p-2">🟨 Negative</td>
+                <td class="p-2">Visionary</td>
+                <td class="p-2">Believes risk is a necessary price for discovery and progress.</td>
+            </tr>
+            <tr class="{scores.safety <= -6 ? 'bg-red-900/40' : ''}">
+                <td class="p-2">🟥 High Negative</td>
+                <td class="p-2">Accelerationist</td>
+                <td class="p-2">Wants unrestricted AI evolution—let the future unfold freely.</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- Human-Like ↔ Robotic -->
+    <table class="w-full border-collapse text-sm text-gray-300 backdrop-blur-xs outline-1 outline-blue-500/50 rounded-xl">
+        <thead>
+            <tr class="text-blue-300 border-b border-blue-500/50">
+                <th colspan="3" class="p-3 text-left font-semibold">Human-Like ↔ Robotic</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr class="{scores.humanlike >= 6 ? 'bg-blue-900/40' : ''}">
+                <td class="p-2 w-36">🟦 High Positive</td>
+                <td class="p-2">Empathic Designer</td>
+                <td class="p-2">Wants AI to feel alive and emotionally intelligent.</td>
+            </tr>
+            <tr class="{scores.humanlike >= 1 && scores.humanlike <= 5 ? 'bg-green-900/40' : ''}">
+                <td class="p-2">🟩 Positive</td>
+                <td class="p-2">Conversationalist</td>
+                <td class="p-2">Prefers expressive but bounded personality in AI.</td>
+            </tr>
+            <tr class="{scores.humanlike === 0 ? 'bg-slate-800/50' : ''}">
+                <td class="p-2">⚪ Neutral</td>
+                <td class="p-2">Indifferent</td>
+                <td class="p-2">No preference. Sees AI as tools regardless of emotional realism.</td>
+            </tr>
+            <tr class="{scores.humanlike <= -1 && scores.humanlike >= -5 ? 'bg-yellow-900/40' : ''}">
+                <td class="p-2">🟨 Negative</td>
+                <td class="p-2">Pragmatist</td>
+                <td class="p-2">Prefers efficient, functional AI over personality.</td>
+            </tr>
+            <tr class="{scores.humanlike <= -6 ? 'bg-red-900/40' : ''}">
+                <td class="p-2">🟥 High Negative</td>
+                <td class="p-2">Mechanist</td>
+                <td class="p-2">Believes AI should remain purely logical and machine-like.</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- Savior ↔ Extinction -->
+    <table class="w-full border-collapse text-sm text-gray-300 backdrop-blur-xs outline-1 outline-blue-500/50 rounded-xl">
+        <thead>
+            <tr class="text-blue-300 border-b border-blue-500/50">
+                <th colspan="3" class="p-3 text-left font-semibold">Savior ↔ Extinction</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr class="{scores.savior >= 6 ? 'bg-blue-900/40' : ''}">
+                <td class="p-2 w-36">🟦 High Positive</td>
+                <td class="p-2">Futurist</td>
+                <td class="p-2">Believes AI will elevate humanity to its next age.</td>
+            </tr>
+            <tr class="{scores.savior >= 1 && scores.savior <= 5 ? 'bg-green-900/40' : ''}">
+                <td class="p-2">🟩 Positive</td>
+                <td class="p-2">Optimist</td>
+                <td class="p-2">Trusts AI's benefits outweigh risks overall.</td>
+            </tr>
+            <tr class="{scores.savior === 0 ? 'bg-slate-800/50' : ''}">
+                <td class="p-2">⚪ Neutral</td>
+                <td class="p-2">Indifferent</td>
+                <td class="p-2">Uncertain or detached. Neither expects salvation nor destruction from AI.</td>
+            </tr>
+            <tr class="{scores.savior <= -1 && scores.savior >= -5 ? 'bg-yellow-900/40' : ''}">
+                <td class="p-2">🟨 Negative</td>
+                <td class="p-2">Survivalist</td>
+                <td class="p-2">Believes AI must be contained or guided to avoid harm.</td>
+            </tr>
+            <tr class="{scores.savior <= -6 ? 'bg-red-900/40' : ''}">
+                <td class="p-2">🟥 High Negative</td>
+                <td class="p-2">Doomer</td>
+                <td class="p-2">Views AI as an existential threat to humanity.</td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+
+<div class="my-20 text-center">
+    <RedirectButton link="/survay">
+        Retake Survey
+    </RedirectButton>
+</div>
