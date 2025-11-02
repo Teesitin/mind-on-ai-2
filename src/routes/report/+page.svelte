@@ -70,15 +70,60 @@
             return qs;
         });
     }
+
+
+
+    function phraseAcceptance(v: number) {
+        if (v >= 6) return "You are very open to AI and embrace its role in everyday life.";
+        if (v >= 1) return "You are generally open to AI and see its potential benefits.";
+        if (v === 0) return "You feel neutral toward AI and use it without strong opinions.";
+        if (v <= -1 && v >= -5) return "You're cautious about AI and prefer to keep some distance.";
+        return "You're strongly opposed to AI and distrust its influence on society.";
+    }
+
+    function phraseSafety(v: number) {
+        if (v >= 6) return "You believe AI should be carefully controlled and ethically regulated.";
+        if (v >= 1) return "You support AI progress, but still value safety and accountability.";
+        if (v === 0) return "You're balanced as you see both risk and opportunity in AI's progress.";
+        if (v <= -1 && v >= -5) return "You lean toward progress and think innovation should move fast.";
+        return "You believe AI progress should be unrestricted, even if it carries risks.";
+    }
+
+    function phraseHumanlike(v: number) {
+        if (v >= 6) return "You prefer AI that feels more human, expressive, and emotionally aware.";
+        if (v >= 1) return "You enjoy AI that shows a touch of personality or empathy.";
+        if (v === 0) return "You don't mind either human-like or robotic, as long as it works.";
+        if (v <= -1 && v >= -5) return "You prefer AI that's practical and straightforward rather than emotional.";
+        return "You like AI to stay purely robotic and efficient, without human traits.";
+    }
+
+    function phraseSavior(v: number) {
+        if (v >= 6) return "You see AI as a force for good and something that can truly improve humanity.";
+        if (v >= 1) return "You think AI will mostly help people and make life easier overall.";
+        if (v === 0) return "You're uncertain whether AI will save or harm us.";
+        if (v <= -1 && v >= -5) return "You're wary that AI could cause more harm than good.";
+        return "You believe AI is dangerous or even a threat to humanity's future.";
+    }
+
+
+    function buildSummary(scores: { acceptance: number; safety: number; humanlike: number; savior: number; }) {
+        return [
+            phraseAcceptance(scores.acceptance),
+            phraseSafety(scores.safety),
+            phraseHumanlike(scores.humanlike),
+            phraseSavior(scores.savior)
+        ].join(" ");
+    }
+
 </script>
 
 <!-- Randomize button for testing -->
-<button
+<!-- <button
     onclick={randomizeAnswers}
     class="fixed top-4 right-4 bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-md shadow-lg z-50"
 >
     🎲 Randomize
-</button>
+</button> -->
 
 
 {#if !allAnswered}
@@ -96,9 +141,14 @@
         </div>
     </section>
 {:else}
-    <section class="mt-10 text-center max-w-3xl m-auto w-[90%]">
-        <h1 class="text-3xl mb-10">Survey says...</h1>
+    <section class="mt-12 text-center max-w-3xl m-auto w-[90%]">
+        <h1 class="text-2xl text-blue-300 mb-4">Quick Summary</h1>
+        <p class="text-lg text-gray-200 leading-relaxed">
+            {buildSummary(scores)}
+        </p>
+    </section>
 
+    <section class="mt-10 text-center max-w-3xl m-auto w-[90%]">
         <div class="flex justify-center gap-40">
             <Gauge bind:value={scores.acceptance} topLabel="Acceptance" bottomLabel="Rejection" />
             <Gauge bind:value={scores.safety} topLabel="Safety" bottomLabel="Progress" />
@@ -107,7 +157,6 @@
         </div>
     </section>
 {/if}
-
 
 <!-- Personality Subtype Tables -->
 <section class="mt-20 max-w-3xl m-auto space-y-20">
@@ -180,7 +229,7 @@
             <tr class="{scores.safety <= -6 ? 'bg-red-900/40' : ''}">
                 <td class="p-2">🟥 High Negative</td>
                 <td class="p-2">Accelerationist</td>
-                <td class="p-2">Wants unrestricted AI evolution—let the future unfold freely.</td>
+                <td class="p-2">Wants unrestricted AI evolution. Let the future unfold freely.</td>
             </tr>
         </tbody>
     </table>

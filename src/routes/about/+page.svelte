@@ -81,4 +81,59 @@
 </section>
 
 
+
+
+<section class="z-10 max-w-3xl w-[90%] mt-20 m-auto text-center rounded-xl backdrop-blur border p-4 border-blue-500/50">
+    <h1 class="text-3xl">How the Report Works</h1>
+    <p>November 2, 2025</p>
+
+    <p class="mt-4 leading-relaxed">
+        For the Report section, I decided to organize everything into four main tiers:
+        <strong>Acceptance ↔ Rejection</strong>, <strong>Safety ↔ Progress</strong>,
+        <strong>Human-Like ↔ Robotic</strong>, and <strong>Savior ↔ Extinction</strong>.
+        Each of these represents a different dimension of how people perceive and interact with AI.
+    </p>
+
+    <p class="mt-4 leading-relaxed">
+        At the bottom of the report, I added a set of detailed tables that break down what each tier means
+        including the subtypes or “personalities” within each category. These help explain what your score
+        says about your general attitude toward AI.
+    </p>
+
+    <p class="mt-4 leading-relaxed">
+        Later on, I'm planning to include a short summary section between the gauges and the breakdown tables.
+        This will give a quick overview of your results so you can instantly understand your overall position
+        before diving into the detailed breakdowns.
+    </p>
+
+    <p class="mt-4 leading-relaxed">
+        For now, this setup keeps things simple but informative, giving enough structure to make results easy
+        to interpret while still leaving room for future updates and improvements.
+    </p>
+</section>
+<section class="z-10 max-w-3xl w-[90%] mt-20 m-auto text-center rounded-xl backdrop-blur border p-4 border-blue-500/50">
+    <h1 class="text-3xl">Beta Release and Next Steps</h1>
+    <p>November 2, 2025</p>
+
+    <p class="mt-4 leading-relaxed">
+        Alright, the site is finally ready for its beta release. Everything right now is serverless, which means nothing is stored online and your answers never leave your device. I'm totally fine with that for now since it keeps things simple and private while testing.
+    </p>
+
+    <p class="mt-4 leading-relaxed">
+        The next step I want to work on is connecting it to Firebase so results can be saved anonymously. That way, I can start building a public page that shows what people really think about AI and where everyone stands overall. I think that would be a cool way to visualize how opinions differ between people.
+    </p>
+
+    <p class="mt-4 leading-relaxed">
+        Of course, before adding that, I'll have to look into privacy policies and make sure it's handled the right way. I want to make sharing completely optional, so people can decide if they want to go public with their results or keep them private. 
+    </p>
+
+    <p class="mt-4 leading-relaxed">
+        That's the plan for now. The foundation is built, everything runs smoothly, and I'm happy with where things are at. From here, it's all about expanding and learning from what people actually think about AI.
+    </p>
+</section>
+
+
+
+
+
 <div class="mt-20"></div>
