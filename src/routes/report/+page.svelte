@@ -149,7 +149,7 @@
     </section>
 
     <section class="mt-10 text-center max-w-3xl m-auto w-[90%]">
-        <div class="flex justify-center gap-40">
+        <div class="flex justify-between">
             <Gauge bind:value={scores.acceptance} topLabel="Acceptance" bottomLabel="Rejection" />
             <Gauge bind:value={scores.safety} topLabel="Safety" bottomLabel="Progress" />
             <Gauge bind:value={scores.humanlike} topLabel="Human" bottomLabel="Robotic" />
@@ -159,7 +159,7 @@
 {/if}
 
 <!-- Personality Subtype Tables -->
-<section class="mt-20 max-w-3xl m-auto space-y-20">
+<section class="mt-20 max-w-3xl m-auto space-y-20 px-4 md:px-0">
     <h2 class="text-2xl mb-4 text-blue-300 text-center">AI Attitude Breakdown</h2>
 
     <!-- Acceptance ↔ Rejection -->
